@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========= THEME: Dark Tiramisu ========= */
+
+:root {
+    --bg-grad: radial-gradient( 1200px 700px at 20% 10%, rgba(255, 255, 255, .05), transparent 60%), linear-gradient(180deg, #18100D, #0D0706);
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    color: rgb(246 239 230 / 0.9);
+    background-image: var(--bg-grad);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.container {
+    width: min(1200px, 92vw);
+    margin-inline: auto;
+}
+
+.hr {
+    border-top: 1px solid rgba(255, 255, 255, .15);
+}
+
+.prose-muted {
+    color: rgb(246 239 230 / 0.7);
+}
+
+
+/* ========= SOCIAL BEAM ========= */
+
+@layer components {
+    /* Button wrapper */
+    .sb .bt {
+        position: relative;
+        height: 120px;
+        display: flex;
+        align-items: flex-end;
+        outline: none;
+        background: none;
+        border: none;
+        /* defaults */
+        --sb-color: #8f2432;
+        /* fallback wine */
+        --sb-ink-rest: rgba(246, 239, 230, 0.65);
+        /* mascarpone dim */
+        --sb-ink-hover: var(--sb-color);
+        /* brand ink */
+        --sb-beam: var(--sb-color);
+        /* beam on hover */
+    }
+    /* Chip */
+    .sb .bt .button-holder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 70px;
+        width: 70px;
+        background-color: #0a0a0a;
+        border-radius: 8px;
+        color: var(--sb-ink-rest);
+        font-weight: 800;
+        transition: 300ms;
+        outline: rgba(246, 239, 230, 0.25) 2px solid;
+        outline-offset: 16px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+    }
+    /* Icon uses currentColor */
+    .sb .sb-icon {
+        color: var(--sb-ink-rest);
+        display: grid;
+        place-items: center;
+        line-height: 0;
+    }
+    .sb .sb-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+    .sb .sb-icon :is(path, circle, rect, polygon, polyline) {
+        fill: currentColor !important;
+        stroke: currentColor !important;
+    }
+    /* Spotlight rig */
+    .sb .bt .light-holder {
+        position: absolute;
+        height: 120px;
+        width: 70px;
+        display: grid;
+        place-items: start center;
+    }
+    .sb .bt .light-holder .dot {
+        position: absolute;
+        top: 0;
+        width: 6px;
+        height: 6px;
+        background-color: #0a0a0a;
+        border-radius: 10px;
+        z-index: 2;
+    }
+    .sb .bt .light-holder .light {
+        position: absolute;
+        top: 0;
+        width: 140px;
+        height: 140px;
+        clip-path: polygon(50% 0%, 25% 100%, 75% 100%);
+        background: transparent;
+        opacity: 0;
+        transition: 260ms ease;
+    }
+    /* Hover state */
+    .sb .bt:hover .button-holder {
+        color: var(--sb-ink-hover);
+        outline: var(--sb-ink-hover) 2px solid;
+        outline-offset: 4px;
+        box-shadow: 0 6px 22px color-mix(in oklab, var(--sb-beam) 45%, black), 0 0 28px rgba(26, 18, 15, .65);
+    }
+    .sb .bt:hover .light-holder .light {
+        opacity: .95;
+        background: linear-gradient( 180deg, var(--sb-beam) 0%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0) 100%);
+    }
+    /* Brand overrides */
+    .sb .bt.sb--instagram {
+        --sb-color: #E1306C;
+    }
+    .sb .bt.sb--facebook {
+        --sb-color: #1877F2;
+    }
+    .sb .bt.sb--linkedin {
+        --sb-color: #0A66C2;
+    }
+    .sb .bt.sb--youtube {
+        --sb-color: #FF0000;
+    }
+    .sb .bt.sb--reddit {
+        --sb-color: #FF4500;
+    }
+    .sb .bt.sb--discord {
+        --sb-color: #5865F2;
+    }
+    /* Special cases: X + GitHub (black brand) */
+    .sb .bt.sb--x {
+        --sb-color: #000000;
+        --sb-ink-hover: #ffffff;
+        --sb-beam: #ffffff;
+    }
+    .sb .bt.sb--github {
+        --sb-color: #181717;
+        --sb-ink-hover: #ffffff;
+        --sb-beam: #ffffff;
+    }
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+        .sb .bt:hover .button-holder {
+            outline-offset: 16px;
+        }
+        .sb .bt:hover .light-holder .light {
+            opacity: .7;
+        }
+    }
+}
