@@ -1,7 +1,7 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 // Modern fonts
 import { Montserrat, Raleway } from "next/font/google";
 

@@ -18,6 +18,10 @@ export async function GET() {
         'EMAIL_SERVER_PORT',
         'EMAIL_SERVER_USER',
         'EMAIL_SERVER_PASSWORD',
+        'GMAIL_USER',
+        'GMAIL_APP_PASSWORD',
+        'CONTACT_TO',
+        'CONTACT_FROM_NAME',
         'EMAIL_FROM',
         'SITE_NAME',
 

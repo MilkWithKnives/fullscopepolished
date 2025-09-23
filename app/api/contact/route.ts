@@ -1,6 +1,7 @@
 // app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { resolveSmtpConfig } from "lib/email/transporter";
 
 // ---- 1) Basic payload validation (no external deps) ----
 function bad(msg: string, status = 400) {
@@ -32,34 +33,10 @@ function rateLimit(ip: string | null) {
 
 // ---- 3) Build a transporter from env ----
 function makeTransporter() {
-  const {
-    EMAIL_SERVER_HOST,
-    EMAIL_SERVER_PORT,
-    EMAIL_SERVER_USER,
-    EMAIL_SERVER_PASSWORD,
-  } = process.env;
-
-  if (
-    !EMAIL_SERVER_HOST ||
-    !EMAIL_SERVER_PORT ||
-    !EMAIL_SERVER_USER ||
-    !EMAIL_SERVER_PASSWORD
-  ) {
-    throw new Error(
-      "Email server env vars missing. Expected EMAIL_SERVER_HOST, EMAIL_SERVER_PORT, EMAIL_SERVER_USER, EMAIL_SERVER_PASSWORD."
-    );
-  }
-
+  const smtp = resolveSmtpConfig();
   return nodemailer.createTransport({
-    host: EMAIL_SERVER_HOST,
-    port: parseInt(EMAIL_SERVER_PORT, 10),
-    secure: false, // Office365/most SMTP use STARTTLS on 587
-    auth: {
-      user: EMAIL_SERVER_USER,
-      pass: EMAIL_SERVER_PASSWORD,
-    },
+    ...smtp,
     tls: {
-      // Helps with some Office365/hosted providers behind proxies
       ciphers: "TLSv1.2",
       rejectUnauthorized: true,
     },
@@ -165,6 +142,10 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim();
+    const phone = String(body.phone || "").trim();
+    const service = String(body.service || "").trim();
+    const budget = String(body.budget || "").trim();
+    const date = String(body.date || "").trim();
     const message = String(body.message || "").trim();
 
     if (!name || name.length < 2) return bad("Please provide your name.");
@@ -175,17 +156,58 @@ export async function POST(req: Request) {
     const company = String(body.company || "").trim();
     if (company) return bad("Spam detected.", 400);
 
-    const SITE_NAME = process.env.SITE_NAME || "Full Scope Media";
-    const EMAIL_FROM = process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER!;
-    const TO = process.env.EMAIL_SERVER_USER || process.env.OUTLOOK_SENDER!; // send to yourself
+    const siteName =
+      process.env.SITE_NAME ||
+      process.env.CONTACT_FROM_NAME ||
+      process.env.NEXT_PUBLIC_SITE_NAME ||
+      "Full Scope Media";
+
+    const defaultAccount =
+      process.env.EMAIL_SERVER_USER ||
+      process.env.GMAIL_USER ||
+      process.env.OUTLOOK_SENDER ||
+      null;
+
+    const toAddress = process.env.CONTACT_TO || defaultAccount;
+    if (!toAddress) {
+      throw new Error(
+        "Missing CONTACT_TO env. Provide CONTACT_TO or configure email account credentials."
+      );
+    }
+
+    const fromAddress = process.env.EMAIL_FROM || defaultAccount;
+    if (!fromAddress) {
+      throw new Error(
+        "Missing from address. Provide EMAIL_FROM, CONTACT_TO, or email account credentials."
+      );
+    }
+
+    const fromName = process.env.CONTACT_FROM_NAME || siteName;
 
     const subject = `New inquiry from ${name}`;
-    const text = `Name: ${name}\nEmail: ${email}\nIP: ${ip ?? "unknown"}\n\nMessage:\n${message}`;
+
+    const textSections = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      phone && `Phone: ${phone}`,
+      service && `Service: ${service}`,
+      budget && `Budget: ${budget}`,
+      date && `Preferred Date: ${date}`,
+      `IP: ${ip ?? "unknown"}`,
+      "",
+      "Message:",
+      message,
+    ].filter(Boolean);
+    const text = textSections.join("\n");
     const html = `
       <div style="font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.6;">
         <h2 style="margin:0 0 8px;">New Contact Form Submission</h2>
         <p><strong>Name:</strong> ${escapeHtml(name)}</p>
         <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        ${phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ""}
+        ${service ? `<p><strong>Service:</strong> ${escapeHtml(service)}</p>` : ""}
+        ${budget ? `<p><strong>Budget:</strong> ${escapeHtml(budget)}</p>` : ""}
+        ${date ? `<p><strong>Preferred Date:</strong> ${escapeHtml(date)}</p>` : ""}
         <p><strong>IP:</strong> ${escapeHtml(ip ?? "unknown")}</p>
         <hr style="border:none;border-top:1px solid #eee;margin:12px 0;">
         <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
@@ -193,13 +215,18 @@ export async function POST(req: Request) {
     `;
 
     if (hasGraphCreds()) {
-      await sendViaGraph({ to: TO!, replyTo: email, subject, text, html });
+      await sendViaGraph({ to: toAddress, replyTo: email, subject, text, html });
     } else {
       // Fallback to SMTP if Graph creds are not configured
       const transporter = makeTransporter();
       await transporter.sendMail({
-        from: `"${SITE_NAME} Forms" <${EMAIL_FROM}>`,
-        to: TO!,
+        from: fromName
+          ? {
+              name: fromName,
+              address: fromAddress,
+            }
+          : fromAddress,
+        to: toAddress,
         replyTo: email,
         subject,
         text,
