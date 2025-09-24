@@ -1,7 +1,10 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 import { Included2DFloorPlanBadge } from '@/components/services/Badges';
 
-export const metadata = { title: 'Photography — PALMA' };
+export const metadata = {
+  title: 'Real Estate Photography | Full Scope Media - Professional Property Photography',
+  description: 'Professional real estate photography services. Interior and exterior photography with natural lighting, HDR processing, and twilight shoots. 2D floor plans included with every package.'
+};
 
 export default function PhotographyService() {
   return (

@@ -1,6 +1,6 @@
 // app/api/env-check/route.ts
 import { NextResponse } from 'next/server';
-
+export const runtime = 'nodejs';
 // Returns presence (true/false) of required env keys without exposing values
 export async function GET() {
   const has = (k: string) => Boolean(process.env[k]);

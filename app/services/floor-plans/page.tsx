@@ -1,7 +1,10 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 import { CubiCasaPreferredBadge, Included2DFloorPlanBadge } from '@/components/services/Badges';
 
-export const metadata = { title: 'Floor Plans — PALMA' };
+export const metadata = {
+  title: 'Real Estate Floor Plans | Full Scope Media - 2D & 3D CubiCasa Floor Plans',
+  description: 'Professional floor plan services using CubiCasa technology. 2D floor plans included with photography packages. Custom branded 3D floor plans for luxury properties.'
+};
 
 export default function FloorPlansService() {
   return (

@@ -1,6 +1,9 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'Portfolio — PALMA' };
+export const metadata = {
+  title: 'Portfolio | Full Scope Media - Real Estate Photography & Video Gallery',
+  description: 'Explore our portfolio of professional real estate photography, videography, and drone footage. High-quality visuals that help properties sell faster in competitive markets.'
+};
 
 const CARDS = [
   {

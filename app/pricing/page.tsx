@@ -1,6 +1,9 @@
 import Reveal from '@/components/motion/Reveal';
 
-export const metadata = { title: 'Pricing — PALMA' };
+export const metadata = {
+  title: 'Pricing | Full Scope Media - Photography & Video Packages',
+  description: 'Transparent pricing for real estate photography, videography, drone, 3D tours, virtual staging, corporate headshots, and graduation photography services.'
+};
 
 export default function PricingPage() {
   return (

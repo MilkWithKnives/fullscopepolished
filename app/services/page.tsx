@@ -2,7 +2,10 @@ import Reveal from '@/components/motion/Reveal';
 import ParallaxImage from '@/components/motion/ParallaxImage';
 import ServiceCard from '@/components/ServiceCard';
 
-export const metadata = { title: 'Services — PALMA' };
+export const metadata = {
+  title: 'Services | Full Scope Media - Real Estate Photography, Corporate Headshots & More',
+  description: 'Premium media services: real estate photography & video, drone footage, 3D tours, virtual staging, floor plans, corporate headshots, personal portraits, and graduation photography.'
+};
 
 export default function ServicesPage() {
   return (
@@ -14,7 +17,7 @@ export default function ServicesPage() {
         <div className="grid md:grid-cols-[1.15fr_.85fr] gap-8 items-start">
           <ParallaxImage
             src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=60"
-            alt="Modern property with pool"
+            alt="Luxury modern home exterior with swimming pool and professional landscaping"
           />
           <div>
             <div className="mb-2 eyebrow">What we do</div>
@@ -41,7 +44,7 @@ export default function ServicesPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://images.unsplash.com/photo-1520880867055-1e30d1cb001c?auto=format&fit=crop&w=1200&q=60"
-                  alt="Photography"
+                  alt="Professional real estate interior photography showing modern living room with natural lighting"
                   className="object-cover w-full rounded-md h-52"
                 />
               </div>
@@ -61,7 +64,7 @@ export default function ServicesPage() {
               <div className="p-3 tile">
                 <img
                   src="https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=60"
-                  alt="Video"
+                  alt="Cinematic real estate videography equipment setup for property tour filming"
                   className="object-cover w-full rounded-md h-52"
                 />
               </div>
@@ -79,7 +82,7 @@ export default function ServicesPage() {
               <div className="p-3 tile">
                 <img
                   src="https://images.unsplash.com/photo-1495195129352-aeb325a55b65?auto=format&fit=crop&w=1200&q=60"
-                  alt="Aerial drone"
+                  alt="Professional drone aerial photography capturing luxury home and surrounding neighborhood"
                   className="object-cover w-full rounded-md h-52"
                 />
               </div>
@@ -133,7 +136,7 @@ export default function ServicesPage() {
           <div className="tile">
             <img
               src="https://images.unsplash.com/photo-1554995208-5196c2dcbf19?auto=format&fit=crop&w=1400&q=60"
-              alt=""
+              alt="Full Scope Media photographer working on professional real estate photography session"
               className="object-cover w-full h-full"
             />
           </div>
@@ -141,7 +144,7 @@ export default function ServicesPage() {
         <Reveal delay={0.05}>
           <div>
             <div className="ghost-title text-[10vw] md:text-[7rem]">About</div>
-            <div className="text-xl font-black uppercase">About Palma</div>
+            <div className="text-xl font-black uppercase">About Full Scope Media</div>
             <p className="mt-2 prose-muted">
               Quality-driven real estate media. From single-family homes to luxury estates, we deliver premium visuals
               that move listings faster.

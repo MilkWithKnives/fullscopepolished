@@ -7,14 +7,14 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // your palette
+                // Light grey scheme with orange accents
                 coffee: {
-                    900: "#15100E",
-                    800: "#1C1512",
-                    700: "#221A17",
+                    900: "#2a2a2a",  // Medium grey for main backgrounds (lighter)
+                    800: "#404040",  // Lighter grey for cards/sections
+                    700: "#666666",  // Light grey for borders/subtle elements
                 },
-                mascarpone: "#F6EFE6",
-                wine: "#8F2432",
+                mascarpone: "#FFFFFF",  // Pure white for text
+                wine: "#FF6B35",        // Orange accent color
             },
             fontFamily: {
                 // Montserrat for display/heads

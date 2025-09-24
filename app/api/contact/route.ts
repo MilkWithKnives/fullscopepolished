@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { resolveSmtpConfig } from "lib/email/transporter";
 
+export const runtime = 'nodejs';
+
 // ---- 1) Basic payload validation (no external deps) ----
 function bad(msg: string, status = 400) {
   return NextResponse.json({ success: false, error: msg }, { status });

@@ -57,12 +57,13 @@ export const PHOTOS: PhotoItem[] = [
 
   // === Add more of your images below this line ===
   // Local images (continue using /Towebsite/... paths):
-  // { src: '/Towebsite/exterior/Exterior5.jpeg', alt: 'Exterior', tag: 'exterior', w: 1600, h: 1067 },
-  // { src: '/Towebsite/interior/Interior18.jpg', alt: 'Interior', tag: 'interior', w: 1600, h: 1067 },
+  { src: '/Towebsite/exterior/Exterior5.jpeg', alt: 'Exterior', tag: 'exterior', w: 1600, h: 1067 },
+  { src: '/Towebsite/interior/Interior18.jpg', alt: 'Interior', tag: 'interior', w: 1600, h: 1067 },
 
-  // NEW: Cloudinary images (use public ID, automatic optimization):
-  // { src: 'portfolio/new-exterior-1', alt: 'New exterior photo', tag: 'exterior', w: 1600, h: 1067 },
-  // { src: 'portfolio/new-interior-1', alt: 'New interior photo', tag: 'interior', w: 1600, h: 1067 },
+// Cloudinary images (use public ID, automatic optimization):
+{ src: 'portfolio/new-exterior-1', alt: 'New exterior photo', tag: 'exterior', w: 1600, h: 1067 },
+{ src: 'portfolio/new-interior-1', alt: 'New interior photo', tag: 'interior', w: 1600, h: 1067 },
+{ src: 'portfolio/new-commercial-1', alt: 'New commercial photo', tag: 'commercial', w: 1600, h: 1067 },
 ];
 
 export const PHOTO_TAGS = ['all', 'interior', 'exterior', 'commercial', 'detail'] as const;

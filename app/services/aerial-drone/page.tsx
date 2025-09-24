@@ -1,6 +1,9 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 
-export const metadata = { title: 'Aerial Drone — PALMA' };
+export const metadata = {
+  title: 'Professional Drone Photography | Full Scope Media - FAA Licensed Aerial Services',
+  description: 'Professional drone photography and videography for real estate. FAA-compliant pilots providing stunning aerial views, neighborhood context, and luxury property showcases.'
+};
 
 export default function AerialDroneService() {
   return (

@@ -1,7 +1,10 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 import { CubiCasaPreferredBadge } from '@/components/services/Badges';
 
-export const metadata = { title: '3D Tours — PALMA' };
+export const metadata = {
+  title: '3D Virtual Tours | Full Scope Media - Matterport & Zillow 3D Home Tours',
+  description: 'Professional 3D virtual tours using Matterport and Zillow 3D technology. Immersive dollhouse views and measured spaces for real estate listings and remote buyers.'
+};
 
 export default function Tours3DService() {
   return (

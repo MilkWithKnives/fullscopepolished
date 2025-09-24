@@ -1,6 +1,9 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 
-export const metadata = { title: 'Virtual Staging — PALMA' };
+export const metadata = {
+  title: 'Virtual Staging Services | Full Scope Media - Digital Home Staging',
+  description: 'Professional virtual staging services for real estate. Digitally furnish vacant properties with modern, luxury, or traditional designs. Fast 24-48 hour turnaround.'
+};
 
 export default function VirtualStagingService() {
   return (

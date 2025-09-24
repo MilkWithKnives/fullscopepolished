@@ -1,6 +1,9 @@
 import AngledGallery, { GalleryItem } from '@/components/portfolio/AngledGallery';
 
-export const metadata = { title: 'Drone Portfolio — PALMA' };
+export const metadata = {
+  title: 'Drone Photography Portfolio | Full Scope Media - Aerial Real Estate Photography',
+  description: 'Professional drone photography portfolio showcasing aerial views of luxury homes, estates, and properties. FAA-licensed pilots capturing stunning neighborhood context and property features.'
+};
 
 const DRONE = [
   'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1400&q=60',

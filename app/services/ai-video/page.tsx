@@ -1,6 +1,9 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 
-export const metadata = { title: 'AI Video Walkthroughs — PALMA' };
+export const metadata = {
+  title: 'AI Video Walkthroughs | Full Scope Media - Quick Property Tour Videos',
+  description: 'AI-generated real estate walkthrough videos for social media and listings. Fast same-day delivery, custom branding, and optimized formats for Instagram, Facebook, and MLS.'
+};
 
 export default function AIVideoService() {
   return (

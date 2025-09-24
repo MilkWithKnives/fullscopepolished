@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { verifyMailer } from "lib/email/transporter";
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     await verifyMailer();
@@ -15,7 +17,14 @@ export async function GET() {
     });
   } catch (err: any) {
     const isProd = process.env.NODE_ENV === "production";
-    const payload: any = { ok: false, error: err?.message || "Verification failed" };
+    interface ErrorPayload {
+      ok: boolean;
+      error: string;
+      code?: string;
+      response?: string;
+      command?: string;
+    }
+    const payload: ErrorPayload = { ok: false, error: err?.message || "Verification failed" };
     // Include extra diagnostics only in non-production to avoid leaking details
     if (!isProd) {
       if (err?.code) payload.code = err.code;

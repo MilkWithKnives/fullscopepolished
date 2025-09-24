@@ -9,6 +9,9 @@ import { Montserrat, Raleway } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+// 🔹 Structured data for SEO
+import { businessStructuredData } from "@/lib/structured-data";
+
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -41,6 +44,14 @@ export default function RootLayout({
       className={`${montserrat.variable} ${raleway.variable} dark`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(businessStructuredData),
+          }}
+        />
+      </head>
       <body className="flex flex-col min-h-screen font-sans antialiased bg-coffee-900 text-mascarpone">
         {/* ✅ NAVBAR */}
         <Header />

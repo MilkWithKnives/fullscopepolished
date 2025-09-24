@@ -1,6 +1,9 @@
 import VideoThumb from '@/components/portfolio/VideoThumb';
 
-export const metadata = { title: 'Video Portfolio — PALMA' };
+export const metadata = {
+  title: 'Video Portfolio | Full Scope Media - Real Estate Videography Showcase',
+  description: 'Professional real estate videography portfolio featuring cinematic property tours, luxury home videos, and stunning visual storytelling for residential and commercial properties.'
+};
 
 // Demo sample videos (public domain samples). Replace with yours when ready.
 const VIDEOS = [

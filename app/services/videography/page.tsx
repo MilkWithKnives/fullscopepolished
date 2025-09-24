@@ -1,6 +1,9 @@
 import ServiceLayout from '@/components/services/ServiceLayout';
 
-export const metadata = { title: 'Videography — PALMA' };
+export const metadata = {
+  title: 'Real Estate Videography | Full Scope Media - Cinematic Property Tours',
+  description: 'Professional real estate videography services. Cinematic property tours with drone integration, 4K quality, and fast turnaround for luxury and residential listings.'
+};
 
 export default function VideographyService() {
   return (
