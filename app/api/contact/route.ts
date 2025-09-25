@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { resolveSmtpConfig } from "lib/email/transporter";
-
 export const runtime = 'nodejs';
 
 // ---- 1) Basic payload validation (no external deps) ----

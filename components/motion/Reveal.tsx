@@ -1,46 +1,34 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 type Props = {
   children: React.ReactNode;
+  /** seconds; e.g. 0.1, 0.2 */
+  delay?: number;
+  /** initial Y offset in px */
+  y?: number;
+  /** seconds */
+  duration?: number;
   className?: string;
-  once?: boolean;
 };
 
-export default function Reveal({ children, className = '', once = true }: Props) {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            el.classList.add('reveal-enter');
-            if (once) obs.unobserve(el);
-          } else if (!once) {
-            el.classList.remove('reveal-enter');
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [once]);
-
+export default function Reveal({
+  children,
+  delay = 0,
+  y = 12,
+  duration = 0.5,
+  className,
+}: Props) {
   return (
-    <div ref={ref} className={`reveal-init ${className}`}>
+    <motion.div
+      initial={{ y, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration, ease: 'easeOut', delay }}
+      className={className}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }
-
-/* Add to globals.css (once):
-.reveal-init { opacity: 0; transform: translateY(6px); transition: opacity .45s ease, transform .45s ease; }
-.reveal-enter { opacity: 1; transform: translateY(0); }
-*/
