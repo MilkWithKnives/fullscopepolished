@@ -1,25 +1,53 @@
 'use client';
+
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import type { VideoItem } from '@/lib/portfolio';
+
+// Accept either a string URL or a typed object
+type VideoItem = string | {
+  src: string;
+  title?: string;
+  poster?: string;         // optional thumbnail
+  preload?: 'none' | 'metadata' | 'auto';
+  loop?: boolean;
+  muted?: boolean;
+};
 
 export default function VideoThumb({ item }: { item: VideoItem }) {
+  const src    = typeof item === 'string' ? item : item.src;
+  const title  = typeof item === 'string' ? ''   : (item.title ?? '');
+  const poster = typeof item === 'string' ? ''   : (item.poster ?? '');
+  const preload= typeof item === 'string' ? 'metadata' : (item.preload ?? 'metadata');
+  const loop   = typeof item === 'string' ? false : !!item.loop;
+  const muted  = typeof item === 'string' ? true  : item.muted ?? true;
+
   const vidRef = useRef<HTMLVideoElement | null>(null);
-  const [playing, setPlaying] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
   return (
     <motion.div
-      className="relative rounded-lg overflow-hidden border border-white/10 bg-white/[.03]"
-      initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-      whileHover={{ y: -3 }}
-      onMouseEnter={() => { const v = vidRef.current; if (v) { v.play().catch(()=>{}); setPlaying(true);} }}
-      onMouseLeave={() => { const v = vidRef.current; if (v) { v.pause(); v.currentTime = 0; setPlaying(false);} }}
+      className="relative overflow-hidden border rounded-xl border-neutral-800"
+      initial={{ opacity: 0, y: 8 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      onMouseEnter={() => { setHovered(true); vidRef.current?.play().catch(() => {}) }}
+      onMouseLeave={() => { setHovered(false); vidRef.current?.pause() }}
     >
-      <video ref={vidRef} muted playsInline preload="metadata" poster={item.poster} className="w-full h-full object-cover">
-        <source src={item.src} type="video/mp4" />
-      </video>
-      {item.title && (
-        <div className="absolute bottom-2 left-2 rounded bg-black/50 px-2 py-1 text-xs font-semibold">
-          {item.title}{playing ? ' • playing' : ''}
+      <video
+        ref={vidRef}
+        src={src}
+        poster={poster || undefined}
+        preload={preload}
+        playsInline
+        muted={muted}
+        loop={loop}
+        controls={!hovered}
+        className="block object-cover w-full h-full"
+      />
+      {title && (
+        <div className="absolute bottom-0 left-0 right-0 p-2 text-sm bg-black/40 backdrop-blur-sm">
+          {title}
         </div>
       )}
     </motion.div>

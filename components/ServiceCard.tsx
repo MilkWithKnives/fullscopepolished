@@ -1,35 +1,50 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+
 type Props = {
   title: string;
-  body: string;
-  href?: string;
-  icon?: React.ReactNode;
+  copy: string;
+  img: string;     // Cloudinary/Unsplash or /public path
+  href: string;
+  delay?: number;  // ✅ make delay optional
+  className?: string;
 };
 
-export default function ServiceCard({ title, body, href, icon }: Props) {
-  const content = (
-    <div
-      className="
-        group relative overflow-hidden rounded-xl border border-white/10 bg-white/[.03] p-5
-        transition-colors duration-300 hover:border-wine
-      "
+export default function ServiceCard({
+  title,
+  copy,
+  img,
+  href,
+  delay = 0,
+  className = '',
+}: Props) {
+  return (
+    <motion.article
+      initial={{ y: 8, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.45, ease: 'easeOut', delay }}  // ✅ uses delay
+      className={`rounded-lg border border-white/15 bg-white/[.03] overflow-hidden ${className}`}
     >
-      <div className="flex items-start gap-3">
-        {icon && <div className="text-wine/90">{icon}</div>}
-        <div>
-          <h3 className="text-lg font-bold tracking-tight">{title}</h3>
-          <p className="mt-1 text-sm text-mascarpone/80">{body}</p>
+      <Link href={href} className="block no-underline">
+        <div className="relative aspect-[16/9]">
+          <Image
+            src={img}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            priority={false}
+          />
         </div>
-      </div>
-      <div className="absolute inset-0 transition-opacity duration-300 opacity-0 pointer-events-none group-hover:opacity-100 bg-gradient-to-br from-wine/10 to-transparent" />
-    </div>
+        <div className="p-6">
+          <h3 className="mb-2 text-lg font-black">{title}</h3>
+          <p className="text-sm text-white/80">{copy}</p>
+        </div>
+      </Link>
+    </motion.article>
   );
-
-  if (href) {
-    return (
-      <a href={href} className="block will-change-transform transition-transform hover:scale-[1.01]">
-        {content}
-      </a>
-    );
-  }
-  return content;
 }

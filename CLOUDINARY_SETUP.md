@@ -5,7 +5,9 @@ This project now supports both local images (existing) and Cloudinary images (ne
 ## How It Works
 
 ### Existing Images (No Changes Required)
+
 All your existing `/Towebsite/...` images continue working exactly as before:
+
 ```typescript
 // These continue working as-is:
 { src: '/Towebsite/exterior/Exterior4.jpeg', alt: 'Exterior', tag: 'exterior' }
@@ -13,7 +15,9 @@ All your existing `/Towebsite/...` images continue working exactly as before:
 ```
 
 ### New Cloudinary Images
+
 For new images, you can now use Cloudinary public IDs for automatic optimization:
+
 ```typescript
 // New Cloudinary images (auto-optimized):
 { src: 'portfolio/new-exterior-1', alt: 'New exterior photo', tag: 'exterior' }
@@ -27,6 +31,7 @@ For new images, you can now use Cloudinary public IDs for automatic optimization
 3. **Add to portfolio.ts** like any other image
 
 Example:
+
 ```typescript
 // In lib/portfolio.ts, add to the PHOTOS array:
 {
@@ -56,6 +61,7 @@ lib/
 ## Environment Variables
 
 Already configured in `.env.local`:
+
 - `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
@@ -64,6 +70,7 @@ Already configured in `.env.local`:
 ## Migration Strategy
 
 **Recommended approach**: Keep existing local images, use Cloudinary for new images only. This gives you:
+
 - Zero disruption to existing setup
 - Ability to test Cloudinary benefits on new content
 - Option to migrate individual images later if desired
