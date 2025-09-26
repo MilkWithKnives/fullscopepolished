@@ -1,51 +1,38 @@
-import Link from 'next/link';
-
-export const metadata = {
-  title: 'Portfolio | Full Scope Media - Real Estate Photography & Video Gallery',
-  description: 'Browse our portfolio showcasing professional real estate photography, cinematic videos, and stunning drone footage. Quality visuals that help properties sell faster.'
-};
+import Link from "next/link";
+import Image from "next/image";
+import { PHOTOS, getPhotoUrl } from "@/lib/portfolio";
 
 const CARDS = [
-  {
-    title: 'Photo',
-    href: '/portfolio/photo',
-    img: 'https://res.cloudinary.com/dowghnozl/image/upload/v1758550494/93-print-RGC04287_Ryan_c6zxqv.jpg',
-  },
-  {
-    title: 'Drone',
-    href: '/portfolio/drone',
-    img: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1400&q=60',
-  },
-  {
-    title: 'Video',
-    href: '/portfolio/video',
-    img: 'https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg',
-  },
+  { slug: "interiors",  cover: PHOTOS.find(p => p.tag === "interior") },
+  { slug: "exteriors",  cover: PHOTOS.find(p => p.tag === "exterior") },
+  { slug: "commercial", cover: PHOTOS.find(p => p.tag === "commercial") },
+  { slug: "details",    cover: PHOTOS.find(p => p.tag === "detail") },
 ];
 
-export default function PortfolioHub() {
+export default function PortfolioIndex() {
   return (
-    <main className="min-h-screen text-white">
-      <section className="container space-y-6 py-14">
-        <div className="text-[14vw] md:text-[9rem] leading-none font-black text-mascarpone/10 uppercase">
-          Portfolio
-        </div>
+    <main className="max-w-6xl px-6 py-12 mx-auto space-y-8">
+      <h1 className="text-4xl font-semibold">Portfolio</h1>
+      <p className="text-neutral-400">Browse by category.</p>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {CARDS.map(c => (
-            <Link key={c.href} href={c.href} className="group rounded-lg border border-white/15 bg-white/[.03] overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.img} alt={c.title} className="object-cover w-full h-56 transition group-hover:opacity-90" />
-              <div className="flex items-center justify-between p-4">
-                <div className="text-xl font-black uppercase">{c.title}</div>
-                <span className="rounded-full bg-wine px-3 py-1 text-xs font-black shadow-[0_6px_18px_rgb(255, 138, 35)] group-hover:bg-wine-700">
-                  View
-                </span>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {CARDS.filter(c => !!c.cover).map(({ slug, cover }) => (
+          <Link key={slug} href={`/portfolio/${slug}`} className="block group">
+            <div className="relative h-64 overflow-hidden border rounded-2xl border-white/10">
+              <Image
+                src={getPhotoUrl(cover! , 1600, 900)}
+                alt={cover!.alt}
+                fill
+                className="object-cover transition-transform group-hover:scale-105"
+                sizes="(min-width: 1024px) 33vw, 100vw"
+              />
+              <div className="absolute inset-0 flex items-end bg-black/35">
+                <div className="p-4 text-xl font-semibold text-white capitalize">{slug}</div>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+            </div>
+          </Link>
+        ))}
+      </div>
     </main>
   );
 }
