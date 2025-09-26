@@ -3,16 +3,16 @@
 import { useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { getOptimizedImageUrl } from "@/lib/cloudinary"; // 👈 add this
+import { getOptimizedImageUrl } from "@/lib/cloudinary";
 
 export type ReelItem =
   | { type: "image"; src: string; alt?: string }
   | { type: "video"; src: string; poster?: string; loop?: boolean; muted?: boolean };
 
 function normalizeSrc(src: string, w = 1920, h = 1080) {
-  // already absolute or local
+  // Already a full URL or local file
   if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
-  // otherwise treat as Cloudinary public ID
+  // Otherwise assume Cloudinary public ID
   return getOptimizedImageUrl(src, { width: w, height: h });
 }
 
@@ -33,20 +33,28 @@ export default function ReelCarousel({
 
   useEffect(() => {
     if (!auto || !scroller.current) return;
-    let raf = 0, paused = false;
+    let raf = 0;
+    let paused = false;
     const node = scroller.current!;
+
     const onEnter = () => (paused = true);
     const onLeave = () => (paused = false);
+
     node.addEventListener("mouseenter", onEnter);
     node.addEventListener("mouseleave", onLeave);
+
     const step = () => {
       if (!paused) {
         node.scrollLeft += speed;
-        if (node.scrollLeft + node.clientWidth >= node.scrollWidth - 1) node.scrollLeft = 0;
+        if (node.scrollLeft + node.clientWidth >= node.scrollWidth - 1) {
+          node.scrollLeft = 0;
+        }
       }
       raf = requestAnimationFrame(step);
     };
+
     raf = requestAnimationFrame(step);
+
     return () => {
       cancelAnimationFrame(raf);
       node.removeEventListener("mouseenter", onEnter);
@@ -62,7 +70,11 @@ export default function ReelCarousel({
 
   return (
     <div className={`relative ${className ?? ""}`}>
-      <div ref={scroller} className="flex overflow-x-auto no-scrollbar [scroll-snap-type:x_mandatory]" style={{ gap }}>
+      <div
+        ref={scroller}
+        className="flex overflow-x-auto no-scrollbar [scroll-snap-type:x_mandatory]"
+        style={{ gap }}
+      >
         {items.map((it, i) => (
           <motion.div
             key={i}
@@ -75,7 +87,7 @@ export default function ReelCarousel({
           >
             {it.type === "image" ? (
               <Image
-                src={normalizeSrc(it.src)}   {/* ✅ always a valid URL now */}
+                src={normalizeSrc(it.src)}
                 alt={it.alt ?? ""}
                 fill
                 className="object-cover"
@@ -97,8 +109,20 @@ export default function ReelCarousel({
         ))}
       </div>
 
-      <button onClick={() => scrollBy(-1)} className="absolute px-3 py-2 text-white -translate-y-1/2 border rounded-full left-3 top-1/2 bg-black/50 backdrop-blur border-white/10" aria-label="Previous">‹</button>
-      <button onClick={() => scrollBy(1)}  className="absolute px-3 py-2 text-white -translate-y-1/2 border rounded-full right-3 top-1/2 bg-black/50 backdrop-blur border-white/10" aria-label="Next">›</button>
+      <button
+        onClick={() => scrollBy(-1)}
+        className="absolute px-3 py-2 text-white -translate-y-1/2 border rounded-full left-3 top-1/2 bg-black/50 backdrop-blur border-white/10"
+        aria-label="Previous"
+      >
+        ‹
+      </button>
+      <button
+        onClick={() => scrollBy(1)}
+        className="absolute px-3 py-2 text-white -translate-y-1/2 border rounded-full right-3 top-1/2 bg-black/50 backdrop-blur border-white/10"
+        aria-label="Next"
+      >
+        ›
+      </button>
     </div>
   );
 }

@@ -19,10 +19,8 @@ export default function MasonryGrid({ items, columns = { base: 1, md: 2, lg: 3 }
         columns-1
         md:columns-2
         lg:columns-3
+        masonry-grid
       "
-      style={{
-        columnGap: '1rem',
-      }}
     >
       {items.map((it, i) => (
         <div key={i} className="mb-4 break-inside-avoid reveal-init">
