@@ -64,6 +64,13 @@ export const PHOTOS: PhotoItem[] = [
 { src: 'portfolio/new-exterior-1', alt: 'New exterior photo', tag: 'exterior', w: 1600, h: 1067 },
 { src: 'portfolio/new-interior-1', alt: 'New interior photo', tag: 'interior', w: 1600, h: 1067 },
 { src: 'portfolio/new-commercial-1', alt: 'New commercial photo', tag: 'commercial', w: 1600, h: 1067 },
+  {
+    src: '93-print-RGC04287_Ryan_c6zxqv',
+    alt: 'Blue chairs in a breakfast nook',
+    tag: 'detail',
+    w: 1600,
+    h: 1067
+  },
 ];
 
 export const PHOTO_TAGS = ['all', 'interior', 'exterior', 'commercial', 'detail'] as const;
