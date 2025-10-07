@@ -71,6 +71,13 @@ export const PHOTOS: PhotoItem[] = [
     w: 1600,
     h: 1067
   },
+  {
+    src: 'https://res.cloudinary.com/dowghnozl/image/upload/v1758550569/3-print-RGC03468_Ryan_oki5fu.jpg',
+    alt: 'exterior',
+    tag: 'exterior',
+    w: 1600,
+    h: 1067
+  },
 ];
 
 export const PHOTO_TAGS = ['all', 'interior', 'exterior', 'commercial', 'detail'] as const;

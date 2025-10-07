@@ -3,10 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const { execSync } = require('child_process');
 
 const PORTFOLIO_PATH = path.join(__dirname, 'lib', 'portfolio.ts');
-const PUBLIC_PATH = path.join(__dirname, 'public', 'Towebsite');
+const HERO_STRIPS_PATH = path.join(__dirname, 'components', 'HeroStrips.tsx');
 
 // Colors for terminal
 const colors = {
@@ -36,16 +35,19 @@ function log(message, color = 'reset') {
 function showHeader() {
   console.clear();
   log('\n╔════════════════════════════════════════════════════════════╗', 'cyan');
-  log('║         FULL SCOPE MEDIA - IMAGE MANAGER 📸               ║', 'cyan');
+  log('║       FULL SCOPE MEDIA - COMPLETE MEDIA MANAGER 🎬        ║', 'cyan');
   log('╚════════════════════════════════════════════════════════════╝\n', 'cyan');
 }
 
 function showMainMenu() {
   log('\n🎯 What would you like to do?\n', 'bright');
-  log('1. 📤 Upload new image to Cloudinary', 'green');
-  log('2. 📁 Add local image (already in /public)', 'green');
-  log('3. 👀 View all portfolio images', 'blue');
-  log('4. 🗑️  Remove an image from portfolio', 'yellow');
+  log('━━━━━━━━━━━ HERO CAROUSEL ━━━━━━━━━━━', 'cyan');
+  log('1. 🎞️  Manage Hero Carousel Strips', 'green');
+  log('\n━━━━━━━━━━━ PORTFOLIO GALLERY ━━━━━━━━━━━', 'cyan');
+  log('2. 📤 Add new image to Portfolio', 'green');
+  log('3. 👀 View all Portfolio images', 'blue');
+  log('4. 🗑️  Remove Portfolio image', 'yellow');
+  log('\n━━━━━━━━━━━ SETTINGS ━━━━━━━━━━━', 'cyan');
   log('5. ⚙️  Setup Cloudinary credentials', 'magenta');
   log('6. 🚪 Exit\n', 'red');
 }
@@ -62,7 +64,6 @@ async function setupCloudinary() {
   const envPath = path.join(__dirname, '.env.local');
   let envContent = fs.readFileSync(envPath, 'utf8');
 
-  // Update or add Cloudinary credentials
   const updates = {
     'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME': cloudName,
     'CLOUDINARY_API_KEY': apiKey,
@@ -84,94 +85,219 @@ async function setupCloudinary() {
   await prompt('Press Enter to continue...');
 }
 
-async function uploadToCloudinary() {
-  showHeader();
-  log('📤 UPLOAD TO CLOUDINARY\n', 'bright');
+// ============= HERO CAROUSEL MANAGEMENT =============
 
-  // Check if credentials exist
-  const envPath = path.join(__dirname, '.env.local');
-  const envContent = fs.readFileSync(envPath, 'utf8');
+async function manageHeroCarousel() {
+  while (true) {
+    showHeader();
+    log('🎞️  HERO CAROUSEL MANAGER\n', 'bright');
+    log('Current 5 strips:\n', 'cyan');
 
-  if (!envContent.includes('NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=') ||
-      envContent.match(/NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=\s*$/m)) {
-    log('⚠️  Cloudinary credentials not set up!\n', 'red');
-    const setup = await prompt('Would you like to set them up now? (y/n): ');
-    if (setup.toLowerCase() === 'y') {
-      await setupCloudinary();
+    const content = fs.readFileSync(HERO_STRIPS_PATH, 'utf8');
+    const stripsMatch = content.match(/const DEFAULT_STRIPS: StripItem\[\] = \[([\s\S]*?)\];/);
+
+    if (!stripsMatch) {
+      log('❌ Could not find carousel strips', 'red');
+      await prompt('Press Enter to continue...');
       return;
     }
-    return;
+
+    // Parse current strips
+    const strips = parseStrips(stripsMatch[1]);
+    strips.forEach((strip, i) => {
+      const icon = strip.type === 'video' ? '🎥' : '📷';
+      log(`${i + 1}. ${icon} ${strip.title} - ${strip.src}`, strip.type === 'video' ? 'magenta' : 'green');
+      if (strip.poster) log(`   └─ Poster: ${strip.poster}`, 'yellow');
+    });
+
+    log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'cyan');
+    log('\n1. Edit a strip', 'green');
+    log('2. Back to main menu\n', 'red');
+
+    const choice = await prompt('Choose (1-2): ');
+
+    if (choice === '1') {
+      const stripNum = await prompt('Which strip to edit (1-5)? ');
+      const idx = parseInt(stripNum) - 1;
+
+      if (idx >= 0 && idx < strips.length) {
+        await editCarouselStrip(strips[idx], idx);
+      } else {
+        log('❌ Invalid strip number', 'red');
+        await prompt('Press Enter to continue...');
+      }
+    } else if (choice === '2') {
+      return;
+    }
+  }
+}
+
+function parseStrips(stripsContent) {
+  const strips = [];
+  const stripRegex = /\{[\s\S]*?id:\s*(\d+)[\s\S]*?type:\s*['"](\w+)['"][\s\S]*?src:\s*['"]([^'"]+)['"][\s\S]*?title:\s*['"]([^'"]+)['"][\s\S]*?(?:text:\s*['"]([^'"]+)['"])?[\s\S]*?(?:poster:\s*['"]([^'"]+)['"])?[\s\S]*?\}/g;
+
+  let match;
+  while ((match = stripRegex.exec(stripsContent)) !== null) {
+    strips.push({
+      id: parseInt(match[1]),
+      type: match[2],
+      src: match[3],
+      title: match[4],
+      text: match[5] || '',
+      poster: match[6] || ''
+    });
   }
 
-  log('📋 Instructions:', 'cyan');
-  log('1. Go to https://cloudinary.com/console', 'yellow');
-  log('2. Click Media Library → Upload', 'yellow');
-  log('3. Upload your image(s)', 'yellow');
-  log('4. Note the Public ID (e.g., "portfolio/exterior/house-1")\n', 'yellow');
+  return strips;
+}
 
-  const publicId = await prompt('Enter the Cloudinary Public ID: ');
-  if (!publicId) {
-    log('❌ No Public ID provided', 'red');
-    await prompt('Press Enter to continue...');
-    return;
+async function editCarouselStrip(strip, index) {
+  showHeader();
+  log(`✏️  EDITING STRIP ${index + 1}: ${strip.title}\n`, 'bright');
+
+  log('What do you want to change?\n', 'cyan');
+  log('1. Change to Image', 'green');
+  log('2. Change to Video', 'green');
+  log('3. Update Title/Text', 'blue');
+  log('4. Cancel\n', 'red');
+
+  const choice = await prompt('Choose (1-4): ');
+
+  if (choice === '1') {
+    await updateStripToImage(strip, index);
+  } else if (choice === '2') {
+    await updateStripToVideo(strip, index);
+  } else if (choice === '3') {
+    await updateStripText(strip, index);
   }
+}
 
-  const alt = await prompt('Enter image description/alt text: ');
+async function updateStripToImage(strip, index) {
+  log('\n📷 UPDATE TO IMAGE\n', 'bright');
 
-  log('\n🏷️  Select category:', 'cyan');
-  log('1. Exterior', 'green');
-  log('2. Interior', 'green');
-  log('3. Commercial', 'green');
-  log('4. Detail', 'green');
-  const tagChoice = await prompt('Choose (1-4): ');
+  log('Enter Cloudinary Public ID or local path (/Towebsite/...)', 'cyan');
+  const src = await prompt('Image source: ');
+  if (!src) return;
 
-  const tags = ['exterior', 'interior', 'commercial', 'detail'];
-  const tag = tags[parseInt(tagChoice) - 1] || 'exterior';
+  const title = await prompt(`Title (current: ${strip.title}): `) || strip.title;
+  const text = await prompt(`Text (current: ${strip.text}): `) || strip.text;
 
-  const width = await prompt('Image width (default 1600): ') || '1600';
-  const height = await prompt('Image height (default 1067): ') || '1067';
-
-  addToPortfolio({
-    src: publicId,
-    alt: alt || 'Full Scope Media project',
-    tag,
-    w: parseInt(width),
-    h: parseInt(height),
-    cloudinary: true
+  updateCarouselStrip(index, {
+    ...strip,
+    type: 'image',
+    src,
+    title,
+    text,
+    poster: undefined
   });
 
-  log('\n✅ Image added to portfolio!\n', 'green');
+  log('\n✅ Strip updated to image!\n', 'green');
   await prompt('Press Enter to continue...');
 }
 
-async function addLocalImage() {
+async function updateStripToVideo(strip, index) {
+  log('\n🎥 UPDATE TO VIDEO\n', 'bright');
+
+  log('Enter Cloudinary video Public ID (e.g., videos/my-video)', 'cyan');
+  const src = await prompt('Video source: ');
+  if (!src) return;
+
+  log('\nEnter poster/thumbnail image:', 'cyan');
+  const poster = await prompt('Poster (Cloudinary ID or /Towebsite/...): ');
+
+  const title = await prompt(`Title (current: ${strip.title}): `) || strip.title;
+  const text = await prompt(`Text (current: ${strip.text}): `) || strip.text;
+
+  updateCarouselStrip(index, {
+    ...strip,
+    type: 'video',
+    src,
+    title,
+    text,
+    poster: poster || strip.poster
+  });
+
+  log('\n✅ Strip updated to video!\n', 'green');
+  await prompt('Press Enter to continue...');
+}
+
+async function updateStripText(strip, index) {
+  log('\n✏️  UPDATE TEXT\n', 'bright');
+
+  const title = await prompt(`Title (current: ${strip.title}): `) || strip.title;
+  const text = await prompt(`Text (current: ${strip.text}): `) || strip.text;
+
+  updateCarouselStrip(index, {
+    ...strip,
+    title,
+    text
+  });
+
+  log('\n✅ Text updated!\n', 'green');
+  await prompt('Press Enter to continue...');
+}
+
+function updateCarouselStrip(index, updatedStrip) {
+  let content = fs.readFileSync(HERO_STRIPS_PATH, 'utf8');
+
+  const stripsMatch = content.match(/const DEFAULT_STRIPS: StripItem\[\] = \[([\s\S]*?)\];/);
+  if (!stripsMatch) {
+    log('❌ Could not find carousel strips', 'red');
+    return;
+  }
+
+  const strips = parseStrips(stripsMatch[1]);
+  strips[index] = updatedStrip;
+
+  // Rebuild the strips array
+  const newStripsContent = strips.map(s => {
+    const poster = s.poster ? `\n    poster: '${s.poster}',` : '';
+    return `  {
+    id: ${s.id},
+    type: '${s.type}',
+    src: '${s.src}',
+    title: '${s.title}',
+    text: '${s.text}',${poster}
+  }`;
+  }).join(',\n');
+
+  const newContent = content.replace(
+    /const DEFAULT_STRIPS: StripItem\[\] = \[[\s\S]*?\];/,
+    `const DEFAULT_STRIPS: StripItem[] = [\n${newStripsContent}\n];`
+  );
+
+  fs.writeFileSync(HERO_STRIPS_PATH, newContent);
+}
+
+// ============= PORTFOLIO MANAGEMENT =============
+
+async function addToPortfolio() {
   showHeader();
-  log('📁 ADD LOCAL IMAGE\n', 'bright');
+  log('📤 ADD TO PORTFOLIO\n', 'bright');
 
-  log('📋 Available categories:', 'cyan');
-  log('• exterior/', 'yellow');
-  log('• interior/', 'yellow');
-  log('• commercial/', 'yellow');
-  log('• detail/\n', 'yellow');
+  log('📋 Image source options:', 'cyan');
+  log('1. Cloudinary (recommended)', 'green');
+  log('2. Local file (/Towebsite/...)\n', 'green');
 
-  log('Example: /Towebsite/exterior/MyPhoto.jpg\n', 'cyan');
+  const sourceChoice = await prompt('Choose (1-2): ');
 
-  const srcPath = await prompt('Enter image path (starting with /Towebsite/): ');
-  if (!srcPath || !srcPath.startsWith('/Towebsite/')) {
-    log('❌ Invalid path. Must start with /Towebsite/', 'red');
+  let src;
+  if (sourceChoice === '1') {
+    log('\n📋 Upload your image to Cloudinary first:', 'yellow');
+    log('   → https://cloudinary.com/console', 'yellow');
+    src = await prompt('\nEnter Cloudinary Public ID: ');
+  } else {
+    log('\nExample: /Towebsite/exterior/MyPhoto.jpg\n', 'cyan');
+    src = await prompt('Enter local path: ');
+  }
+
+  if (!src) {
+    log('❌ No source provided', 'red');
     await prompt('Press Enter to continue...');
     return;
   }
 
-  // Check if file exists
-  const fullPath = path.join(__dirname, 'public', srcPath.replace('/Towebsite/', 'Towebsite/'));
-  if (!fs.existsSync(fullPath)) {
-    log(`⚠️  Warning: File not found at ${fullPath}`, 'yellow');
-    const cont = await prompt('Continue anyway? (y/n): ');
-    if (cont.toLowerCase() !== 'y') return;
-  }
-
-  const alt = await prompt('Enter image description/alt text: ');
+  const alt = await prompt('Image description/alt text: ');
 
   log('\n🏷️  Select category:', 'cyan');
   log('1. Exterior', 'green');
@@ -186,8 +312,8 @@ async function addLocalImage() {
   const width = await prompt('Image width (default 1600): ') || '1600';
   const height = await prompt('Image height (default 1067): ') || '1067';
 
-  addToPortfolio({
-    src: srcPath,
+  addImageToPortfolio({
+    src,
     alt: alt || 'Full Scope Media project',
     tag,
     w: parseInt(width),
@@ -198,10 +324,9 @@ async function addLocalImage() {
   await prompt('Press Enter to continue...');
 }
 
-function addToPortfolio(imageData) {
+function addImageToPortfolio(imageData) {
   let content = fs.readFileSync(PORTFOLIO_PATH, 'utf8');
 
-  // Find the PHOTOS array
   const photosArrayRegex = /export const PHOTOS: PhotoItem\[\] = \[([\s\S]*?)\];/;
   const match = content.match(photosArrayRegex);
 
@@ -218,7 +343,6 @@ function addToPortfolio(imageData) {
     h: ${imageData.h}
   },`;
 
-  // Insert before the closing bracket
   const arrayContent = match[1];
   const updatedArray = arrayContent.trimEnd() + '\n' + newEntry + '\n';
   const updatedContent = content.replace(photosArrayRegex, `export const PHOTOS: PhotoItem[] = [${updatedArray}];`);
@@ -240,7 +364,6 @@ async function viewAllImages() {
     return;
   }
 
-  // Parse images (simple regex)
   const imageRegex = /src:\s*['"]([^'"]+)['"]/g;
   const images = [];
   let imgMatch;
@@ -277,7 +400,6 @@ async function removeImage() {
     return;
   }
 
-  // Parse images
   const imageRegex = /\{[^}]*src:\s*['"]([^'"]+)['"][^}]*\}/g;
   const images = [];
   let imgMatch;
@@ -317,7 +439,6 @@ async function removeImage() {
     return;
   }
 
-  // Remove the image entry
   const entryRegex = new RegExp(`\\s*\\{[^}]*src:\\s*['"]` + images[index].src.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `['"][^}]*\\},?`, 'g');
   const updatedContent = content.replace(entryRegex, '');
 
@@ -325,6 +446,8 @@ async function removeImage() {
   log('\n✅ Image removed!\n', 'green');
   await prompt('Press Enter to continue...');
 }
+
+// ============= MAIN LOOP =============
 
 async function main() {
   while (true) {
@@ -335,10 +458,10 @@ async function main() {
 
     switch (choice) {
       case '1':
-        await uploadToCloudinary();
+        await manageHeroCarousel();
         break;
       case '2':
-        await addLocalImage();
+        await addToPortfolio();
         break;
       case '3':
         await viewAllImages();
@@ -360,7 +483,6 @@ async function main() {
   }
 }
 
-// Start the CLI
 main().catch(err => {
   console.error('Error:', err);
   rl.close();

@@ -14,7 +14,7 @@ const NAV = [
   { href: '/contact', label: 'Contact' },
 ];
 
-export default function Header() {
+export default function HeaderPreview() {
   const [open, setOpen] = useState(false);
 
   // Lock body scroll when mobile menu is open
@@ -28,13 +28,13 @@ export default function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 w-full h-16 border-b sm:h-18 md:h-20 lg:h-24 border-white/10 bg-coffee-900/70 backdrop-blur-md">
-      <div className="container relative flex items-center justify-between h-full px-3 sm:px-4 lg:px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-coffee-900/70 backdrop-blur-md">
+      <div className="container relative flex items-center justify-between px-3 py-4 sm:px-4 lg:px-6">
         {/* LEFT: Logo + Mobile Burger */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Logo - More prominent sizing */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          {/* Logo - PROMINENTLY LARGE */}
           <Link href="/" className="block">
-            <Logo className="w-auto h-8 transition-all duration-300 sm:h-10 md:h-12 lg:h-14 xl:h-16 text-mascarpone" />
+            <Logo stretch className="w-[500px] h-[120px] sm:w-[600px] sm:h-[150px] md:w-[700px] md:h-[180px] lg:w-[800px] lg:h-[200px] text-mascarpone" />
           </Link>
 
           {/* Mobile burger - Enhanced touch target */}
@@ -108,7 +108,7 @@ export default function Header() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
-              <Logo className="w-auto h-8 sm:h-10 text-mascarpone" />
+              <Logo className="w-auto h-12 sm:h-16 text-mascarpone" />
             </div>
             <button
               type="button"

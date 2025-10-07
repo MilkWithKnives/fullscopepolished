@@ -3,6 +3,19 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 
+// Helper to get Cloudinary URLs
+function getMediaUrl(src: string, type: 'image' | 'video'): string {
+  // If it's a local path (starts with /), return as-is
+  if (src.startsWith('/') || src.startsWith('http')) {
+    return src;
+  }
+
+  // Otherwise, it's a Cloudinary public ID
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dowghnozl';
+  const mediaType = type === 'video' ? 'video' : 'image';
+  return `https://res.cloudinary.com/${cloudName}/${mediaType}/upload/${src}`;
+}
+
 type StripItem = {
   id: number;
   type: 'image' | 'video';
@@ -16,39 +29,38 @@ const DEFAULT_STRIPS: StripItem[] = [
   {
     id: 1,
     type: 'image',
-    src: '/Towebsite/exterior/Exterior4.jpg', // kept .jpg to match the actual file
+    src: '/Towebsite/exterior/Exterior4.jpg',
     title: 'Exteriors',
-    text: 'Curb appeal that stops the scroll.',
+    text: '',
   },
   {
     id: 2,
     type: 'image',
     src: '/Towebsite/interior/Interior34.jpg',
     title: 'Interiors',
-    text: 'Clean lines, color-true processing.',
+    text: '',
   },
   {
     id: 3,
     type: 'video',
-    src: '/Towebsite/video/Video3.mp4',
-    poster: '/Towebsite/interior/Interior34.jpg',
+    src: '1-video-3977_uf64vk',
     title: 'Video Tours',
-    text: 'Cinematic motion that sells.',
+    text: '',
   },
   {
     id: 4,
     type: 'image',
     src: '/Towebsite/commercial/commercial14.jpg',
     title: 'Commercial',
-    text: 'Retail & office spaces—distinct and sharp.',
+    text: '',
   },
   {
     id: 5,
     type: 'image',
     src: '/Towebsite/interior/Interior22.jpg',
     title: 'Details',
-    text: 'Design highlights that matter.',
-  },
+    text: '',
+  }
 ];
 
 type Props = {
@@ -117,13 +129,13 @@ export default function HeroStrips({
               key={strip.id}
               className={clsx(
                 'relative h-full cursor-pointer overflow-hidden rounded-none',
-                // Faster transition + snappier easing
-                'transition-[flex-grow] duration-300 md:duration-400 ease-[cubic-bezier(.25,.9,.2,1)]',
-                // Stronger contrast between active and siblings to increase perceived speed
+                // Smooth, balanced transition
+                'transition-[flex-grow] duration-500 ease-in-out',
+                // Balanced growth ratios for smooth expansion
                 isActive
-                  ? 'basis-0 grow-[6]'
+                  ? 'basis-0 grow-[5]'
                   : someoneActive
-                  ? 'basis-0 grow-[0.4]'
+                  ? 'basis-0 grow-[0.5]'
                   : 'basis-0 grow',
                 // rendering hint
                 'will-change-[flex-grow]'
@@ -135,11 +147,11 @@ export default function HeroStrips({
               {/* media */}
               {strip.type === 'image' ? (
                 <img
-                  src={strip.src}
+                  src={getMediaUrl(strip.src, 'image')}
                   alt={strip.title}
                   className="absolute inset-0 object-cover w-full h-full"
                   style={{
-                    // Shorter, lighter intro. Less stagger so it doesn’t feel sluggish.
+                    // Shorter, lighter intro. Less stagger so it doesn't feel sluggish.
                     animation:
                       intro && idx < 5
                         ? `bgRise 400ms ${Math.max(0, 80 * idx)}ms ease-out both`
@@ -150,8 +162,8 @@ export default function HeroStrips({
                 />
               ) : (
                 <video
-                  src={strip.src}
-                  poster={strip.poster}
+                  src={getMediaUrl(strip.src, 'video')}
+                  poster={strip.poster ? getMediaUrl(strip.poster, 'image') : undefined}
                   autoPlay
                   muted
                   loop
